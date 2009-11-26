@@ -14,14 +14,22 @@ object Silhueta {
      |19 18 22
      |23 13 29
      |14 3 25""".stripMargin
-     le(new ByteArrayInputStream(entrada.getBytes))
+     val edifs = le(new ByteArrayInputStream(entrada.getBytes))
+     println(edifs.size)
+     val result = algoritmo1(edifs)
+     imprime(result)
+  }
+  
+  def imprime(lista:List[ElemSilhueta]):Unit = {
+    println(lista.size)
+    println(lista)
   }
   
   def le(stream:InputStream):List[Edificio] = {
     val linhas = Source.fromInputStream(stream).getLines;
-    val n =  linhas.next.toInt
+    val n =  linhas.next.stripLineEnd.toInt
     linhas.take(n).map((linha) => {
-    	var args = linha.split(" ")
+    	var args = linha.stripLineEnd.split(" ")
     	Edificio(args(0).toInt, args(1).toInt, args(2).toInt)
     }).toList
   }
