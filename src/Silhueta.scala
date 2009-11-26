@@ -1,20 +1,29 @@
-import java.util.Scanner
+import scala.io.Source
 import java.io.InputStream
+import java.io.ByteArrayInputStream
 
 object Silhueta {
   
   def main(args : Array[String]) : Unit = {
-    
+     val entrada = """8
+     |12 7 16
+     |2 6 7
+     |1 11 5
+     |24 4 28 
+     |3 13 9
+     |19 18 22
+     |23 13 29
+     |14 3 25""".stripMargin
+     le(new ByteArrayInputStream(entrada.getBytes))
   }
   
   def le(stream:InputStream):List[Edificio] = {
-    val entrada = new Scanner(stream)
-    val n =  entrada;
-    var result = List[Edificio]()
-    for (i <- 1 to n) {
-      result = Edificio()
-    }
-	val result = List[Edificio]();
+    val linhas = Source.fromInputStream(stream).getLines;
+    val n =  linhas.next.toInt
+    linhas.take(n).map((linha) => {
+    	var args = linha.split(" ")
+    	Edificio(args(0).toInt, args(1).toInt, args(2).toInt)
+    }).toList
   }
   
   def algoritmo1(edifs: List[Edificio]): List[ElemSilhueta] = {
