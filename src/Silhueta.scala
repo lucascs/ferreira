@@ -35,9 +35,9 @@ object Silhueta {
   }
   
   def algoritmo1(edifs: List[Edificio]): List[ElemSilhueta] = {
-    val result = silhuetaDeEdificio(edifs(0))
+    var result = silhuetaDeEdificio(edifs(0))
     for (i <- 1 to edifs.size)
-      uniao(result, silhuetaDeEdificio(edifs(1)))
+      result = uniao(result, silhuetaDeEdificio(edifs(1)))
     result
   }
     
