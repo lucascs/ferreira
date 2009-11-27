@@ -36,22 +36,27 @@ object Silhueta {
     val maxh = (0 /: result) { _ max _.h }
     val maxx = result.last.x
    
-    val matriz = new Matriz[Int](maxx, maxh)
-   
+    val matriz = new Matriz[Int](NLins, NCols)
+    
+    val multx = NCols/maxx
+    
+    preencheRetangulo(matriz, 0, NLins, 0, NCols, Branco)
+    
     def preenche(lista:List[ElemSilhueta]):Unit = lista match {
-      case x::y::tail => preencheRetangulo(matriz, x.x, y.x, 0, x.h, Preto)
+      case x::y::tail => preencheRetangulo(matriz, MargemInf, MargemInf + x.h*multx, 
+                                           x.x*multx, y.x*multx, Preto)
       					 preenche(y::tail)
       case _ =>
-    
+    }
     preenche(result)
     
     pgmFile.println("P2")
     pgmFile.println(NCols + " " + NLins)
+    pgmFile.println(Branco)
     
-    val multx = NCols/maxx
     
-    for(i <- 0 to maxh -1) {
-      matriz(i).foreach((0 to multx).foreach(x => pgmFile.print(x))
+    for(i <- 1 to NLins) {
+      matriz(NLins - i).foreach(pos => pgmFile.print(pos + " "))
       pgmFile.println()
     }
   }
@@ -59,7 +64,7 @@ object Silhueta {
   def preencheRetangulo(a:Matriz[Int], 
                         lin1:Int, lin2:Int,
   						col1:Int, col2:Int, k: Int):Unit = {
-     for (i <- lin1 to lin2; j <- col1 to col2)
+     for (i <- lin1 to lin2 - 1; j <- col1 to col2 -1)
        a(i, j) = k
   }
   
