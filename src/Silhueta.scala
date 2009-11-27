@@ -1,32 +1,80 @@
 import scala.io.Source
+import java.lang.System
 import java.io.InputStream
+import java.io.FileInputStream
+import java.io.PrintStream
+import java.io.OutputStream
 import java.io.ByteArrayInputStream
 
 object Silhueta {
   
-  def main(args : Array[String]) : Unit = {
-     val entrada = """8
-     |12 7 16
-     |2 6 7
-     |1 11 5
-     |24 4 28 
-     |3 13 9
-     |19 18 22
-     |23 13 29
-     |14 3 25""".stripMargin
-     val edifs = le(new ByteArrayInputStream(entrada.getBytes))
-     println(edifs.size)
-     imprime(algoritmo1(edifs))
-     imprime(algoritmo2(edifs))
-     imprime(algoritmo3(edifs))
-     imprime(silhuetaComFoldLeft(edifs))
-     imprime(silhuetaComFoldRight(edifs))
+	val NLins = 600                     // número de linhas da imagem
+	val NCols = 800                     // número de colunas da imagem
+	val BordaInf = NLins - 1            // borda inferior (última linha da imagem) 
+	val MargemInf = 20                  // linhas do eixo base à borda inferior da imagem
+	val Base = BordaInf - MargemInf     // linha do eixo base 
+	val Branco = 15                     // valor de maxval
+	val Cinza = 10                      // cor da silhueta preenchida
+	val Preto = 0                       // cor do eixo base
+
+  def main(args: Array[String]) : Unit = {
+     val alg = if (args.size >= 1) parseAlg(args(0)) else algoritmo3(_)
+     val entrada = if (args.size >= 2) new FileInputStream(args(1)) else System.in 
+     val saida = if (args.size >= 3) new PrintStream(args(2)) else System.out
+     val pgm = if (args.size >= 4) Some(new PrintStream(args(3))) else None
+     
+     val edifs = le(entrada)
+     val result = alg(edifs)
+     imprime(result , saida)
+     geraPGM(result, pgm)
   }
   
-  def imprime(lista:List[ElemSilhueta]):Unit = {
-    println(lista.size)
-    lista.foreach(x => print(x.x + " " + x.h + ", "))
-    println()
+  def geraPGM(result:List[ElemSilhueta], pgm:Option[PrintStream]):Unit = pgm match {
+    case None => 
+    case Some(pgmFile) =>
+      
+    val maxh = (0 /: result) { _ max _.h }
+    val maxx = result.last.x
+   
+    val matriz = new Matriz[Int](maxx, maxh)
+   
+    def preenche(lista:List[ElemSilhueta]):Unit = lista match {
+      case x::y::tail => preencheRetangulo(matriz, x.x, y.x, 0, x.h, Preto)
+      					 preenche(y::tail)
+      case _ =>
+    
+    preenche(result)
+    
+    pgmFile.println("P2")
+    pgmFile.println(NCols + " " + NLins)
+    
+    val multx = NCols/maxx
+    
+    for(i <- 0 to maxh -1) {
+      matriz(i).foreach((0 to multx).foreach(x => pgmFile.print(x))
+      pgmFile.println()
+    }
+  }
+  
+  def preencheRetangulo(a:Matriz[Int], 
+                        lin1:Int, lin2:Int,
+  						col1:Int, col2:Int, k: Int):Unit = {
+     for (i <- lin1 to lin2; j <- col1 to col2)
+       a(i, j) = k
+  }
+  
+  def parseAlg(alg:String): ((List[Edificio]) => List[ElemSilhueta]) = alg match {
+    case "1" => algoritmo1(_)
+    case "2" => algoritmo2(_)
+    case "3" => algoritmo3(_)
+    case "L" => silhuetaComFoldLeft(_)
+    case "R" => silhuetaComFoldRight(_)
+  }
+  
+  def imprime(lista:List[ElemSilhueta], saida: PrintStream):Unit = {
+    saida.println(lista.size)
+    lista.foreach(x => saida.println(x.x + " " + x.h))
+    saida.println()
   }
   
   def le(stream:InputStream):List[Edificio] = {
