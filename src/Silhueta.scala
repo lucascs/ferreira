@@ -16,8 +16,11 @@ object Silhueta {
      |14 3 25""".stripMargin
      val edifs = le(new ByteArrayInputStream(entrada.getBytes))
      println(edifs.size)
-     val result = algoritmo1(edifs)
-     imprime(result)
+     imprime(algoritmo1(edifs))
+     imprime(algoritmo2(edifs))
+     imprime(algoritmo3(edifs))
+     imprime(silhuetaComFoldLeft(edifs))
+     imprime(silhuetaComFoldRight(edifs))
   }
   
   def imprime(lista:List[ElemSilhueta]):Unit = {
@@ -36,8 +39,8 @@ object Silhueta {
   
   def algoritmo1(edifs: List[Edificio]): List[ElemSilhueta] = {
     var result = silhuetaDeEdificio(edifs(0))
-    for (i <- 1 to edifs.size)
-      result = uniao(result, silhuetaDeEdificio(edifs(1)))
+    for (i <- 1 to (edifs.size - 1))
+      result = uniao(result, silhuetaDeEdificio(edifs(i)))
     result
   }
     
@@ -51,8 +54,9 @@ object Silhueta {
   
   def algoritmo3(edifs: List[Edificio]): List[ElemSilhueta] = edifs match {
     case Nil => Nil
+    case elem::Nil => silhuetaDeEdificio(elem)
     case list => 
-    	val (esquerda, direita) = list splitAt list.size/2
+    	val (esquerda, direita) = list splitAt (list.size/2)
     	uniao(algoritmo3(esquerda), algoritmo3(direita))
   }
   
