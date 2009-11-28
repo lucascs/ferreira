@@ -137,7 +137,7 @@ object Silhueta {
         if (e.h > hx && e.h > hmax) //subindo
           e :: loop(es, d::ds, e.h, hy, e.h) 
         else if (hx == hmax) // descendo e o e é maior
-          ElemSilhueta(e.x, hy max e.h) :: loop(es, d::ds, e.h, hy, hy)
+          ElemSilhueta(e.x, hy max e.h) :: loop(es, d::ds, e.h, hy, hy max e.h)
         else
           loop(es, d::ds, e.h, hy, hmax)
       
@@ -145,7 +145,7 @@ object Silhueta {
         if (d.h > hy && d.h > hmax) //subindo
           d :: loop(e::es, ds, hx, d.h, d.h) 
         else if (hy == hmax) // descendo e o d é maior
-          ElemSilhueta(d.x, hx max d.h) :: loop(e::es, ds, hx, d.h, hx)
+          ElemSilhueta(d.x, hx max d.h) :: loop(e::es, ds, hx, d.h, hx max d.h)
         else
           loop(e::es, ds, hx, d.h, hmax)
       
