@@ -38,7 +38,7 @@ object Silhueta {
    
     val matriz = new Matriz[Int](NLins, NCols)
     
-    val multx = NCols/maxx
+    val multx = 1// NCols/maxx
     
     preencheRetangulo(matriz, 0, NLins, 0, NCols, Branco)
     
@@ -121,53 +121,44 @@ object Silhueta {
   	(edifs :\ List[ElemSilhueta]()){ (elem, list) => uniao(silhuetaDeEdificio(elem), list)}  
   
   def uniao(s1: List[ElemSilhueta], s2: List[ElemSilhueta]): List[ElemSilhueta] = {
-    val esquerda = 1
-    val direita = 2
-    val igual = 0
     
-    def loop(xs: List[ElemSilhueta], ys: List[ElemSilhueta], hx: Int, hy:Int, hmax:Int, ultimo:Int): List[ElemSilhueta] = (xs, ys) match {
+    def loop(xs: List[ElemSilhueta], ys: List[ElemSilhueta], hx: Int, hy:Int, hmax:Int): List[ElemSilhueta] = (xs, ys) match {
       case (Nil, x) => x
       case (x, Nil) => x
       
       case (e::es, d::ds) if e.x == d.x => {
-    	if (d.h > e.h && d.h > hmax) 
-    		d :: loop(es, ds, e.h, d.h, d.h, direita)
-    	else if (e.h > d.h && e.h > hmax)
-        	e :: loop(es, ds, e.h, d.h, e.h, esquerda)
-        else if (e.h == d.h && e.h > hmax) 
-          e :: loop(es, ds, e.h, d.h, e.h, igual)
+    	if (d.h >= e.h && (d.h >= hmax || d.h <= hy)) 
+    		d :: loop(es, ds, e.h, d.h, d.h)
+    	else if (e.h >= d.h && (e.h >= hmax || e.h <= hx))
+        	e :: loop(es, ds, e.h, d.h, e.h)
         else 
-          loop(es, ds, e.h, d.h, hmax, ultimo)
+        	loop(es, ds, e.h, d.h, hmax)
       }
         
       case (e::es, d::ds) if e.x < d.x => 
-        if (e.h > hx && e.h > hmax) //subindo
-          e :: loop(es, d::ds, e.h, hy, e.h, esquerda) 
-        else if (e.h < hx)// && (ultimo == esquerda || ultimo == igual)) // descendo e o e é maior
+        if (e.h >= hx && e.h >= hmax) //subindo
+          e :: loop(es, d::ds, e.h, hy, e.h) 
+        else if (e.h <= hx) // descendo e o e é maior
           if (hy > e.h)
-        	 ElemSilhueta(e.x, hy) :: loop(es, d::ds, e.h, hy, hy, direita)
-          else if (hy == e.h)
-        	 ElemSilhueta(e.x, hy) :: loop(es, d::ds, e.h, hy, hy, igual)
+        	 ElemSilhueta(e.x, hy) :: loop(es, d::ds, e.h, hy, hy)
           else
-             ElemSilhueta(e.x, e.h) :: loop(es, d::ds, e.h, hy, e.h, esquerda)
+             ElemSilhueta(e.x, e.h) :: loop(es, d::ds, e.h, hy, e.h)
         else
-          loop(es, d::ds, e.h, hy, hmax, ultimo)
+          loop(es, d::ds, e.h, hy, hmax)
       
       case (e::es, d::ds) if e.x > d.x => 
-        if (d.h > hy && d.h > hmax) //subindo
-          d :: loop(e::es, ds, hx, d.h, d.h, direita) 
-        else if (d.h < hy)// && (ultimo == direita || ultimo == igual)) // descendo e o d é maior
+        if (d.h >= hy && d.h >= hmax) //subindo
+          d :: loop(e::es, ds, hx, d.h, d.h) 
+        else if (d.h <= hy) // descendo e o d é maior
           if (hx > d.h)
-            ElemSilhueta(d.x, hx) :: loop(e::es, ds, hx, d.h, hx, esquerda)
-          else if (hx == d.h)
-            ElemSilhueta(d.x, hx) :: loop(e::es, ds, hx, d.h, hx, igual)
+            ElemSilhueta(d.x, hx) :: loop(e::es, ds, hx, d.h, hx)
           else
-            ElemSilhueta(d.x, d.h) :: loop(e::es, ds, hx, d.h, d.h, direita)
+            ElemSilhueta(d.x, d.h) :: loop(e::es, ds, hx, d.h, d.h)
         else
-          loop(e::es, ds, hx, d.h, hmax, ultimo)
+          loop(e::es, ds, hx, d.h, hmax)
       
     }
-	loop(s1, s2, 0, 0, 0, igual)
+	loop(s1, s2, 0, 0, 0)
   }
   
   def silhuetaDeEdificio(edif: Edificio): List[ElemSilhueta] = 
